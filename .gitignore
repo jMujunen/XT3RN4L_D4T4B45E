@@ -1,5 +1,6 @@
 # .gitignore for ellas project
 **/__pycache__/
 **/gui_examples/
-**/.venv/
+**/venv/
 **/tests/
+.*/
