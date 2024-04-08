@@ -21,14 +21,32 @@ def layout(unit_number, due_date, status, sale_type):
         [
             sg.Text("Unit Number"), 
             sg.Push(), 
-            sg.Input(key="-EDIT_UNIT_NUMBER-", size=(25,1), default_text=unit_number)
+            sg.Input(
+                key="-EDIT_UNIT_NUMBER-", 
+                size=(25,1), 
+                default_text=unit_number,
+                readonly=True,
+                text_color='black',
+                background_color='dark gray'
+            )
         ],
         [
             sg.Text("Due Date"), 
             sg.Push(),
             #sg.DatePicker(key="-EDIT_DUE_DATE-", default_date=due_date) 
-            sg.Input(key="-EDIT_DUE_DATE-", size=(16,1), default_text=due_date),
-            sg.Button('Pick', key='-EDIT_DUE_DATE_CHOICE-')
+            sg.Input(
+                key="-EDIT_DUE_DATE-", 
+                size=(16,1),
+                readonly=True, 
+                text_color='black',
+                background_color='dark gray',
+                default_text=due_date
+            ),
+            sg.CalendarButton(
+                'Choose', 
+                key='-EDIT_DUE_DATE_CHOICE-',
+                format='%Y-%m-%d',
+            )
         ],
         [
             sg.Text("Status"), 

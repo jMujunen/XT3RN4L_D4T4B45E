@@ -12,14 +12,29 @@ def layout():
         [
             sg.Text("Unit Number"), 
             sg.Push(), 
-            sg.Input(key="-ADD_UNIT_NUMBER-", size=(25,1), default_text="EQC-")
+            sg.Input(
+                key="-ADD_UNIT_NUMBER-", 
+                size=(25,1), 
+                default_text="EQC-",
+                enable_events=True
+                )
         ],
         [
             sg.Text("Due Date"), 
             sg.Push(),
-            #sg.DatePicker(key="-EDIT_DUE_DATE-", default_date=due_date) 
-            sg.Input(key="-ADD_DUE_DATE-", size=(16,1), readonly=True, default_text=datetime.date.today().strftime("%m/%d/%Y"), text_color='black', background_color='dark gray',),
-            sg.Button('Pick', key='-ADD_DUE_DATE_CHOICE-')
+            sg.Input(
+                key="-ADD_DUE_DATE-", 
+                size=(16,1), 
+                readonly=True, 
+                default_text=datetime.date.today().strftime("%Y-%m-%d"), 
+                text_color='black', 
+                background_color='dark gray'
+            ),
+            sg.CalendarButton(
+                'Choose', 
+                key='-ADD_DUE_DATE_CHOICE-',
+                format='%Y-%m-%d',
+            )
         ],
         [
             sg.Text("Status"), 
@@ -40,7 +55,7 @@ def layout():
                  )
         ],
         [
-            sg.Button('Save', key='-ADD_MENU_SAVE-'), 
+            sg.Button('Add', key='-ADD_MENU_SAVE-'), 
             sg.Button('Cancel', key='-ADD_MENU_CANCEL-'), 
         ],
     ]

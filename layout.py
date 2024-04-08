@@ -13,7 +13,7 @@ from random_data import random_data
 sg.theme("Dark Gray 2")
 
 '''
-[["","BBB","CCC","DDD"],["AAA","111","222","333"]]
+[["EQC-003746","2024-06-01","active","cash"],["AAA","111","222","333"]]
 '''
 
 

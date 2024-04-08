@@ -5,27 +5,37 @@ import os
 import string
 import operator
 import PySimpleGUI as sg
+
 # External libraries
 from tkhtmlview import html_parser
 import markdown
+import pprint
+
 # Layouts
 import layout
 import edit_layout
 import add_layout
+import data
+from random_data import random_data as random_data_dict
+
 # Custom Modules
 from RandomValues import RandomValues
 import Html_Viewer
 
 def main(table_values, raw_values):
+    global local_table_values
+    global local_raw_values
+    local_raw_values = raw_values
+    local_table_values = table_values
     """
-    A function that takes two input parameters, table_values and raw_values,
+    A function that takes two input parameters, local_table_values and local_raw_values,
     and performs a series of operations including creating a dictionary, 
     filtering a table, editing a row, sorting a table, and handling window events 
     until the event is a window closure or an exit event.
 
     Parameters:
-        table_values (list): A list of lists representing the table data excluding notes.
-        raw_values (list): A list of lists representing the raw data, including notes.
+        local_table_values (list): A list of lists representing the table data excluding notes.
+        local_raw_values (list): A list of lists representing the raw data, including notes.
     """
     # Convert header (row, col) to string representation
     header_list = [(-1,0), (-1,1), (-1,2), (-1,3)]
@@ -34,7 +44,7 @@ def main(table_values, raw_values):
     markdown_widget = window["-MARKDOWN-"].Widget
     width, height = markdown_widget.winfo_width(), markdown_widget.winfo_height()
     HTML_OBJ = Html_Viewer.HTML_VIEWER()
-    parsed_markdown = HTML_OBJ.markdown2html(raw_values[0][4])
+    parsed_markdown = HTML_OBJ.markdown2html(local_raw_values[0][4])
     parsed_html = HTML_OBJ.set_html(markdown_widget, parsed_markdown, strip=False)
     width, height = markdown_widget.winfo_width(), markdown_widget.winfo_height()
     # Create a dictionary to associate the string values with the tuples
@@ -52,19 +62,19 @@ def main(table_values, raw_values):
         # Determine state of checkbox
         if event == '-EDIT_NOTES-':
             try:
-                note = raw_values[values["-TABLE-"][0]][-1]
+                note = local_raw_values[values["-TABLE-"][0]][-1]
                 display_html(note, True, markdown_widget, HTML_OBJ)
             except IndexError:
                 pass
 
         # Filtering table
         if event == '-FILTER-':
-            table_values, raw_values = filter_table(values["-FILTER-"])
+            local_table_values, local_raw_values = filter_table(values["-FILTER-"])
 
         # Editing values of a row. Spawns a custom popup menu
         if event == '-EDIT-':
             try:
-                edit_row(values["-TABLE-"])
+                edit_row(values["-TABLE-"], local_raw_values[values["-TABLE-"][0]][-1])
             except IndexError:
                 sg.popup_ok('Please select a row to edit')
         if event == '-ADD-':
@@ -72,7 +82,7 @@ def main(table_values, raw_values):
 
         if event == '-REMOVE-':
             try:
-                table_values, raw_values = remove_row(values["-TABLE-"])
+                local_table_values, local_raw_values = remove_row(values["-TABLE-"])
             except IndexError:
                 sg.popup_ok('Please select a row to remove')
 
@@ -88,7 +98,7 @@ def main(table_values, raw_values):
             if '-TABLE-' in event:
                 if '+CLICKED+' in event:
                     try:
-                        note = raw_values[values["-TABLE-"][0]][-1]
+                        note = local_raw_values[values["-TABLE-"][0]][-1]
                         display_html(note, False, markdown_widget, HTML_OBJ)
                         
                         if values['-EDIT_NOTES-'] == False:
@@ -111,7 +121,8 @@ def main(table_values, raw_values):
                 # Check if header was clicked and not the "row" column
                 if event[2][0] == -1 and event[2][1] != -1:
                     col_num_clicked = event[2][1]
-                    table_values, raw_values = sort_table(raw_values,(col_num_clicked, 0))
+                    local_table_values, local_raw_values = sort_table(local_raw_values,(col_num_clicked, 0))
+                    window['-TABLE-'].update(local_table_values)
         
         if event == sg.WIN_CLOSED or event == "-EXIT-":
             break
@@ -124,50 +135,70 @@ def remove_row(index):
         os.system('cls')
         print(index)
     
-    row = table_values[index[0]]
+    row = local_table_values[index[0]]
     if sg.popup_ok_cancel(f'Are you sure you want to remove {row[0]}?') == 'OK':
         print(f'Removing {row[0]}')
-        table_values.pop(index[0])
-        raw_values.pop(index[0])
+        try:
+            save_to_file(row, remove=True)
+            local_table_values.pop(index[0])
+            local_raw_values.pop(index[0])
+            sg.popup_ok(f'Successfully removed {row[0]}')
+        except Exception as e:
+            print(e)
+            print(f'Could not remove {row[0]}')
+            sg.popup_ok(f'Could not remove {row[0]}\n{e}')
     else:
         print(f'Keeping {row[0]}')
-    window['-TABLE-'].update(table_values)
-    return table_values, raw_values
+    window['-TABLE-'].update(local_table_values)
+    return local_table_values, local_raw_values
 
 def add_row():
     add_window = add_layout.layout()
     while True:
         add_event, add_values = add_window.read()
+
+        # Input validation: Unit numbers must equal 10
+        # The following logic checks if the length of the input is greater than 10
+        # each time the input is changed. If it is greater than 10, the 11th
+        # character will be removed.
+        if len(add_values['-ADD_UNIT_NUMBER-']) > 10:
+            add_values['-ADD_UNIT_NUMBER-'] = add_values['-ADD_UNIT_NUMBER-'][:10]
+            add_window['-ADD_UNIT_NUMBER-'].update(add_values['-ADD_UNIT_NUMBER-'])
         try:
             if add_event == '-ADD_MENU_SAVE-':
                 # Check for empty or invalid values
                 if add_values['-ADD_UNIT_NUMBER-'] == '' or \
-                        'EQC' not in add_values['-ADD_UNIT_NUMBER-']:
+                        'EQC-' not in add_values['-ADD_UNIT_NUMBER-']:
                     sg.popup_ok('Please enter a valid unit number')
-                '''
-                if add_values['-ADD_DUE_DATE-'] == '' or \
-                        not re.match(r'\d{4}-\d{2}-\d{2}', add_values['-ADD_DUE_DATE-']):
-                    sg.popup_ok('Please enter a valid due date')
-                if add_values['-ADD_STATUS-'] == '':
-                    sg.popup_ok('Please enter a status')
-                if add_values['-ADD_SALE_TYPE-'] == '':
-                    sg.popup_ok('Please enter a sale type')
-                '''
-                table_values.append([
-                    add_values['-ADD_UNIT_NUMBER-'], 
-                    add_values['-ADD_DUE_DATE-'], 
-                    add_values['-ADD_STATUS-'], 
+                    continue
+                if add_values['-ADD_UNIT_NUMBER-'] in [row[0] for row in local_table_values]:
+                    sg.popup_ok('Unit number already exists')
+                    continue
+                if len(add_values['-ADD_UNIT_NUMBER-']) != 10:
+                    sg.popup_ok('Unitnumber must be 10 characters (6 digits) long')
+                    continue
+
+                # Add new row and append to table, local_raw_values
+                row = [
+                    add_values['-ADD_UNIT_NUMBER-'],
+                    add_values['-ADD_DUE_DATE-'],
+                    add_values['-ADD_STATUS-'],
                     add_values['-ADD_SALE_TYPE-']
-                ])
+                ]
+                save_to_file(row)
+                local_table_values.append(row)
+                local_raw_values.append(row)
+                window['-TABLE-'].update(local_table_values)
                 sg.popup_ok(f'Successfully added {add_values["-ADD_UNIT_NUMBER-"]}')
                 break
             if add_event == sg.WIN_CLOSED or add_event == '-ADD_MENU_CANCEL-':
                 break
         except Exception as e:
             sg.popup_ok(f'Error: {e}')
+            print(e)
             break
     add_window.close()
-def edit_row(index):
+def edit_row(index, note):
     """
     Edit a row in the table based on the given index.
 
@@ -183,19 +214,42 @@ def edit_row(index):
     except:
         os.system('cls')
         print(index)
-    row = table_values[index[0]]
+    row = local_table_values[index[0]]
     edit_window = edit_layout.layout(row[0], row[1], row[2], row[3])
 
     while True:
         edit_event, edit_values = edit_window.read()
+
+        # Input validation: Unit numbers must equal 10
+        # The following logic checks if the length of the input is greater than 10
+        # each time the input is changed. If it is greater than 10, the 11th
+        # character will be removed.
+        try:
+            if len(edit_values['-EDIT_UNIT_NUMBER-']) > 10:
+                edit_values['-EDIT_UNIT_NUMBER-'] = edit_values['-EDIT_UNIT_NUMBER-'][:10]
+                edit_window['-EDIT_UNIT_NUMBER-'].update(edit_values['-EDIT_UNIT_NUMBER-'])
+        except Exception as e:
+            print(e)
+            break
+        # Save Event
         if edit_event == '-EDIT_MENU_SAVE-':
-            table_values[index[0]] = (
-                edit_values['-EDIT_UNIT_NUMBER-'], 
-                edit_values['-EDIT_DUE_DATE-'], 
-                edit_values['-EDIT_STATUS-'], 
-                edit_values['-EDIT_SALE_TYPE-']
-            )
-            print(table_values[index[0]])
+            # Show a popup if successful, otherwise show a popup error
+            try:
+                row = [
+                    edit_values['-EDIT_UNIT_NUMBER-'], 
+                    edit_values['-EDIT_DUE_DATE-'], 
+                    edit_values['-EDIT_STATUS-'], 
+                    edit_values['-EDIT_SALE_TYPE-'],
+                    note
+                ]
+                local_table_values[index[0]] = row[:-1]
+                local_raw_values[index[0]] = row
+                save_to_file(row)
+                window['-TABLE-'].update(local_table_values)
+                sg.popup_ok(f'Successfully edited {edit_values["-EDIT_UNIT_NUMBER-"]}')
+            except Exception as e:
+                sg.popup_ok(f'Error: {e}')
+                break
             edit_window.close()
             break
         if edit_event == '-EDIT_DUE_DATE_CHOICE-':
@@ -206,14 +260,15 @@ def edit_row(index):
         if edit_event == '-EDIT_MENU_CANCEL-' or sg.WIN_CLOSED:
             edit_window.close()
             break
-    window['-TABLE-'].update(table_values)
 
-def sort_table(raw_values, cols):
+    window['-TABLE-'].update(local_table_values)
+
+def sort_table(local_raw_values, cols):
     """
     Sorts a table by the clicked column in ascending and descending order.
 
     Parameters:
-        raw_values (list): The raw values of the table.
+        local_raw_values (list): The raw values of the table.
         cols (tuple): The columns to sort by.
 
     Returns:
@@ -224,30 +279,30 @@ def sort_table(raw_values, cols):
     for col in reversed(cols):
         try:
             sorted_raw_values = sorted(
-                raw_values, 
+                local_raw_values, 
                 key=operator.itemgetter(col)
             )
         except Exception as e:
             sg.popup_error('Error in sort_table', 'Exception in sort_table', e)
     # Sort by clicked column, decending order
-    if sorted_raw_values == raw_values:
+    if sorted_raw_values == local_raw_values:
         for col in reversed(cols):
             try:
                 sorted_raw_values = sorted(
-                    raw_values, 
+                    local_raw_values, 
                     key=operator.itemgetter(col), 
                     reverse=True
                 )
             except Exception as e:
                 sg.popup_error('Error in sort_table', 'Exception in sort_table', e)
-
+    local_raw_values = sorted_raw_values
+    local_table_values = local_raw_values[0:][:-1]
     sorted_table = sorted_raw_values[0:][:-1]
-    window['-TABLE-'].update(sorted_table)
     return sorted_table, sorted_raw_values
 
     '''
-    sorted_raw_values = sorted(raw_values, key=lambda x: x[sort_by])
-    sorted_table_values = sorted(table_values, key=lambda x: x[sort_by])
+    sorted_raw_values = sorted(local_raw_values, key=lambda x: x[sort_by])
+    sorted_table_values = sorted(local_table_values, key=lambda x: x[sort_by])
     window['-TABLE-'].update(sorted_table_values)
     return sorted_raw_values, sorted_table_values
     '''
@@ -272,11 +327,11 @@ def filter_table(filter_value):
     prefix = 'EQC-'
     #filter_string = prefix + input
     '''
-    for row in table_values:
+    for row in local_table_values:
         if filter_string in row[0]:
             filtered_table.append(row)
     '''
-    for row in raw_values:
+    for row in local_raw_values:
         if filter_value in row[0]:
             filtered_raw_values.append(row)
             filtered_table.append(row[:-1])
@@ -301,7 +356,61 @@ def display_html(notes, notes_edit_state, markdown_widget, HTML_VIEWER):
         window["-NOTES-"].update(notes)
         return notes
 
-RandomValues(200).write_to_dict()
-window, table_values, raw_values = layout.main()
-main(table_values, raw_values)
+def save_to_file(values_list, remove=False):
+    # Start Temporary logic. Remove once saving to file is fully implemented
+    count = 0
+    for key in values_list:
+        count += 1
+    if count > 5:
+        print('Feature not yet implemented')
+        sg.popup('Feature not yet implemented')
+    #<!--- End Temporary logic ---!>
+
+    row_dict = {}
+    unit_number = values_list[0]
+    due_date = values_list[1]
+    status = values_list[2]
+    sale_type = values_list[3]
+
+    try:
+        notes = values_list[4]
+    except IndexError:
+        notes = ''
+
+    if unit_number not in random_data_dict.keys():
+        print(f'Adding {unit_number}')
+        row_dict[unit_number] = {}
+        row_dict[unit_number]['due_date'] = due_date
+        row_dict[unit_number]['status'] = status
+        row_dict[unit_number]['sale_type'] = sale_type
+        row_dict[unit_number]['notes'] = notes
+
+    else:
+        if remove == True:
+            print(f'Removing {unit_number}')
+            del random_data_dict[unit_number]
+            row_dict = {}
+        else:
+            print(f'Updating {unit_number}')
+            row_dict[unit_number] = {
+                'due_date': due_date,
+                'status': status,
+                'sale_type': sale_type,
+                'notes': notes
+            }
+
+    print(row_dict)
+    random_data_dict.update(row_dict)
+    local_raw_values = data.parse_dict_to_table(random_data_dict)
+    local_table_values = []
+
+    for row in local_raw_values:
+        local_table_values.append(row[:-1])
+    window['-TABLE-'].update(local_table_values)
+    with open('random_data.py', 'w') as f:
+        f.write('random_data = ' + pprint.pformat(random_data_dict))
+
+#RandomValues(200).write_to_dict()
+window, global_table_values, global_raw_values = layout.main()
+main(global_table_values, global_raw_values)
 window.close()
