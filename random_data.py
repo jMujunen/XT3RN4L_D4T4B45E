@@ -27,64 +27,65 @@ random_data = {'EQC-002592': {'due_date': '',
                          'magna aliqua. \n'
                          '- lorem ipsum dolor sit amet, consectetur adipiscing '
                          'elit, sed do eiusmod tempor incididunt ut labore et '
-                         'dolore magna aliqua. ',
+                         'dolore magna aliqua.',
                 'sale_type': 'Net30',
                 'status': 'Damaged'},
  'EQC-003293': {'due_date': '2026-07-14',
-                'notes': '',
+                'notes': 'DSTOPT()\n\n> 15151515151',
                 'sale_type': 'Cash',
                 'status': 'Damaged'},
  'EQC-004859': {'due_date': '2025-05-18',
-                'notes': '# EQC-004859\n'
-                         '\n'
-                         '--------------------\n'
-                         '\n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt. \n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt ut labore et '
-                         'dolore magna aliqua. \n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt ut labore et '
-                         'dolore magna aliqua. lorem ipsum dolor sit amet, '
-                         'consectetur adipiscing elit, sed do eiusmod tempor '
-                         'incididunt ut labore et dolore magna aliqua. \n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt ut labore et '
-                         'dolore magna aliqua. lorem ipsum dolor sit amet, '
-                         'consectetur adipiscing elit, sed do eiusmod tempor '
-                         'incididunt ut labore et dolore magna aliqua. ',
+                'notes': '\n'
+                         '- item a\n'
+                         '- tiem b\n'
+                         '    - item aa\n'
+                         '    - item bb\n'
+                         '- item c\n'
+                         '- item a\n'
+                         '- tiem b\n'
+                         '    - item aa\n'
+                         '    - item bb\n'
+                         '- item a\n'
+                         '- tiem b\n'
+                         '    - item aa\n'
+                         '        - item aaa\n'
+                         '    -  bb\n'
+                         '- item c\n'
+                         '- item a\n'
+                         '- tiem b',
                 'sale_type': 'Cash',
                 'status': 'Active'},
  'EQC-005563': {'due_date': '2025-01-16',
-                'notes': '# EQC-005563\n'
+                'notes': '### afa\n'
                          '\n'
-                         '--------------------\n'
+                         '- Paska\n'
+                         '- napa \n'
+                         '\\- \n'
                          '\n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt. lorem ipsum '
-                         'dolor sit amet, consectetur adipiscing elit, sed do '
-                         'eiusmod tempor incididunt. lorem ipsum dolor sit '
-                         'amet, consectetur adipiscing elit, sed do eiusmod '
-                         'tempor incididunt. \n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt ut labore et '
-                         'dolore magna aliqua. \n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt ut labore et '
-                         'dolore magna aliqua. lorem ipsum dolor sit amet, '
-                         'consectetur adipiscing elit, sed do eiusmod tempor '
-                         'incididunt ut labore et dolore magna aliqua. lorem '
-                         'ipsum dolor sit amet, consectetur adipiscing elit, '
-                         'sed do eiusmod tempor incididunt ut labore et dolore '
-                         'magna aliqua. ',
+                         '<p stlye="color: blue;"> PARAGE </p>',
                 'sale_type': 'Net30',
                 'status': 'Active'},
  'EQC-006480': {'due_date': '',
-                'notes': '# EQC-006480\n'
+                'notes': '- lorem ipsum dolor sit amet, consectetur adipiscing '
+                         'elit, sed do eiusmod tempor incididunt. lorem ipsum '
+                         'dolor sit amet, consectetur adipiscing elit, sed do '
+                         'eiusmod tempor incididunt. lorem ipsum dolor sit '
+                         'amet, consectetur adipiscing elit, sed do eiusmod '
+                         'tempor incididunt. - lorem ipsum dolor sit amet, '
+                         'consectetur adipiscing elit, sed do eiusmod tempor '
+                         'incididunt. lorem ipsum dolor sit amet, consectetur '
+                         'adipiscing elit, sed do eiusmod tempor incididunt. '
+                         'lorem ipsum dolor sit amet, consectetur adipiscing '
+                         'elit, sed do eiusmod tempor incididunt. # '
+                         'EQC-006480\n'
                          '\n'
                          '--------------------\n'
-                         '\n'
+                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
+                         'elit, sed do eiusmod tempor incididunt. lorem ipsum '
+                         'dolor sit amet, consectetur adipiscing elit, sed do '
+                         'eiusmod tempor incididunt. lorem ipsum dolor sit '
+                         'amet, consectetur adipiscing elit, sed do eiusmod '
+                         'tempor incididunt. \n'
                          '- lorem ipsum dolor sit amet, consectetur adipiscing '
                          'elit, sed do eiusmod tempor incididunt. lorem ipsum '
                          'dolor sit amet, consectetur adipiscing elit, sed do '
@@ -115,7 +116,7 @@ random_data = {'EQC-002592': {'due_date': '',
                          'magna aliqua. \n'
                          '- lorem ipsum dolor sit amet, consectetur adipiscing '
                          'elit, sed do eiusmod tempor incididunt ut labore et '
-                         'dolore magna aliqua. ',
+                         'dolore magna aliqua.',
                 'sale_type': '',
                 'status': 'Damaged'},
  'EQC-018976': {'due_date': '',
@@ -133,46 +134,7 @@ random_data = {'EQC-002592': {'due_date': '',
                 'sale_type': '',
                 'status': 'Damaged'},
  'EQC-019357': {'due_date': '2026-07-30',
-                'notes': '# EQC-019357\n'
-                         '\n'
-                         '--------------------\n'
-                         '\n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt. lorem ipsum '
-                         'dolor sit amet, consectetur adipiscing elit, sed do '
-                         'eiusmod tempor incididunt. \n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt ut labore et '
-                         'dolore magna aliqua. lorem ipsum dolor sit amet, '
-                         'consectetur adipiscing elit, sed do eiusmod tempor '
-                         'incididunt ut labore et dolore magna aliqua. lorem '
-                         'ipsum dolor sit amet, consectetur adipiscing elit, '
-                         'sed do eiusmod tempor incididunt ut labore et dolore '
-                         'magna aliqua. \n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt ut labore et '
-                         'dolore magna aliqua. lorem ipsum dolor sit amet, '
-                         'consectetur adipiscing elit, sed do eiusmod tempor '
-                         'incididunt ut labore et dolore magna aliqua. lorem '
-                         'ipsum dolor sit amet, consectetur adipiscing elit, '
-                         'sed do eiusmod tempor incididunt ut labore et dolore '
-                         'magna aliqua. \n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt ut labore et '
-                         'dolore magna aliqua. lorem ipsum dolor sit amet, '
-                         'consectetur adipiscing elit, sed do eiusmod tempor '
-                         'incididunt ut labore et dolore magna aliqua. lorem '
-                         'ipsum dolor sit amet, consectetur adipiscing elit, '
-                         'sed do eiusmod tempor incididunt ut labore et dolore '
-                         'magna aliqua. \n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt ut labore et '
-                         'dolore magna aliqua. lorem ipsum dolor sit amet, '
-                         'consectetur adipiscing elit, sed do eiusmod tempor '
-                         'incididunt ut labore et dolore magna aliqua. lorem '
-                         'ipsum dolor sit amet, consectetur adipiscing elit, '
-                         'sed do eiusmod tempor incididunt ut labore et dolore '
-                         'magna aliqua. ',
+                'notes': 'Paska',
                 'sale_type': 'Cash',
                 'status': 'Active'},
  'EQC-029796': {'due_date': '',
@@ -316,19 +278,17 @@ random_data = {'EQC-002592': {'due_date': '',
                 'sale_type': '',
                 'status': 'Damaged'},
  'EQC-078882': {'due_date': '2025-05-21',
-                'notes': '# EQC-078882\n'
+                'notes': 'EQC-078882\n'
                          '\n'
-                         '--------------------\n'
-                         '\n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
+                         '\t•\tlorem ipsum dolor sit amet, consectetur '
+                         'adipiscing elit, sed do eiusmod tempor incididunt. '
+                         'lorem ipsum dolor sit amet, consectetur adipiscing '
                          'elit, sed do eiusmod tempor incididunt. lorem ipsum '
                          'dolor sit amet, consectetur adipiscing elit, sed do '
-                         'eiusmod tempor incididunt. lorem ipsum dolor sit '
-                         'amet, consectetur adipiscing elit, sed do eiusmod '
-                         'tempor incididunt. \n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt ut labore et '
-                         'dolore magna aliqua. ',
+                         'eiusmod tempor incididunt.\n'
+                         '\t•\tlorem ipsum dolor sit amet, consectetur '
+                         'adipiscing elit, sed do eiusmod tempor incididunt ut '
+                         'labore et dolore magna aliqua.',
                 'sale_type': 'Net30',
                 'status': 'Active'},
  'EQC-079012': {'due_date': '2025-03-16',
@@ -548,10 +508,10 @@ random_data = {'EQC-002592': {'due_date': '',
                          'dolore magna aliqua. ',
                 'sale_type': '',
                 'status': 'Damaged'},
- 'EQC-111111': {'due_date': '',
+ 'EQC-111111': {'due_date': '2024-04-19',
                 'notes': '',
                 'sale_type': '',
-                'status': 'Active'},
+                'status': ''},
  'EQC-111112': {'due_date': '',
                 'notes': '',
                 'sale_type': '',
@@ -5153,25 +5113,7 @@ random_data = {'EQC-002592': {'due_date': '',
                 'sale_type': 'Cash',
                 'status': 'Active'},
  'EQC-924939': {'due_date': '',
-                'notes': '# EQC-924939\n'
-                         '\n'
-                         '--------------------\n'
-                         '\n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt. lorem ipsum '
-                         'dolor sit amet, consectetur adipiscing elit, sed do '
-                         'eiusmod tempor incididunt. \n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt ut labore et '
-                         'dolore magna aliqua. lorem ipsum dolor sit amet, '
-                         'consectetur adipiscing elit, sed do eiusmod tempor '
-                         'incididunt ut labore et dolore magna aliqua. \n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt ut labore et '
-                         'dolore magna aliqua. \n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt ut labore et '
-                         'dolore magna aliqua. ',
+                'notes': True,
                 'sale_type': '',
                 'status': 'Damaged'},
  'EQC-926246': {'due_date': '2026-01-19',
@@ -5438,20 +5380,7 @@ random_data = {'EQC-002592': {'due_date': '',
                 'sale_type': '',
                 'status': 'Damaged'},
  'EQC-973421': {'due_date': '2024-11-09',
-                'notes': '# EQC-973421\n'
-                         '\n'
-                         '--------------------\n'
-                         '\n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt. \n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt ut labore et '
-                         'dolore magna aliqua. \n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt ut labore et '
-                         'dolore magna aliqua. lorem ipsum dolor sit amet, '
-                         'consectetur adipiscing elit, sed do eiusmod tempor '
-                         'incididunt ut labore et dolore magna aliqua. ',
+                'notes': True,
                 'sale_type': 'Cash',
                 'status': 'Active'},
  'EQC-973956': {'due_date': '',
@@ -5477,34 +5406,6 @@ random_data = {'EQC-002592': {'due_date': '',
                 'sale_type': '',
                 'status': 'Damaged'},
  'EQC-999051': {'due_date': '',
-                'notes': '# EQC-999051\n'
-                         '\n'
-                         '--------------------\n'
-                         '\n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt. lorem ipsum '
-                         'dolor sit amet, consectetur adipiscing elit, sed do '
-                         'eiusmod tempor incididunt. lorem ipsum dolor sit '
-                         'amet, consectetur adipiscing elit, sed do eiusmod '
-                         'tempor incididunt. \n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt ut labore et '
-                         'dolore magna aliqua. lorem ipsum dolor sit amet, '
-                         'consectetur adipiscing elit, sed do eiusmod tempor '
-                         'incididunt ut labore et dolore magna aliqua. lorem '
-                         'ipsum dolor sit amet, consectetur adipiscing elit, '
-                         'sed do eiusmod tempor incididunt ut labore et dolore '
-                         'magna aliqua. \n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt ut labore et '
-                         'dolore magna aliqua. lorem ipsum dolor sit amet, '
-                         'consectetur adipiscing elit, sed do eiusmod tempor '
-                         'incididunt ut labore et dolore magna aliqua. lorem '
-                         'ipsum dolor sit amet, consectetur adipiscing elit, '
-                         'sed do eiusmod tempor incididunt ut labore et dolore '
-                         'magna aliqua. \n'
-                         '- lorem ipsum dolor sit amet, consectetur adipiscing '
-                         'elit, sed do eiusmod tempor incididunt ut labore et '
-                         'dolore magna aliqua. ',
+                'notes': True,
                 'sale_type': '',
                 'status': 'Ready'}}

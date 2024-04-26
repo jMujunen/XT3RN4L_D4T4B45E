@@ -18,7 +18,7 @@ class HTML_VIEWER:
         self.html_parser.w_set_html(widget, html, strip=strip)
         widget.config(state=prev_state)
     def markdown2html(self, markdown_content):
-        html_content = markdown.markdown(markdown_content)
+        html_content = markdown.markdown(str(markdown_content))
         return html_content
 
 # Example
