@@ -6,12 +6,12 @@ import sys
 import os
 import string
 import operator
-import PySimpleGUI as sg
 
 # External libraries
 from tkhtmlview import html_parser
 import markdown
 import pprint
+import PySimpleGUI as sg
 
 # Layouts
 import layout
