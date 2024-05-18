@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# main.py - Main entry point to this project. Running this starts the app
+
 import sys
 import os
 import string
