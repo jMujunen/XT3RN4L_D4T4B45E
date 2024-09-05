@@ -6,20 +6,23 @@ from tkhtmlview import html_parser
 import PySimpleGUI as sg
 import markdown
 
+
 class HTML_VIEWER:
     def __init__(self):
         self.html_parser = html_parser.HTMLTextParser()
 
     def set_html(self, widget, html, strip=True):
-        prev_state = widget.cget('state')
+        prev_state = widget.cget("state")
         widget.config(state=sg.tk.NORMAL)
-        widget.delete('1.0', sg.tk.END)
+        widget.delete("1.0", sg.tk.END)
         widget.tag_delete(widget.tag_names)
         self.html_parser.w_set_html(widget, html, strip=strip)
         widget.config(state=prev_state)
+
     def markdown2html(self, markdown_content):
         html_content = markdown.markdown(str(markdown_content))
         return html_content
+
 
 # Example
 
@@ -35,29 +38,29 @@ if __name__ == "__main__":
 </ul>
 """
 
-
-
     sg.theme("Dark Gray 2")
 
-
     layout_notes = [
-        [sg.Multiline(
-            size=(70, 40),
-            border_width=2,
-            text_color='black',
-            background_color='white',
-            disabled=True,
-            key='-NOTES-')],
+        [
+            sg.Multiline(
+                size=(70, 40),
+                border_width=2,
+                text_color="black",
+                background_color="white",
+                disabled=True,
+                key="-NOTES-",
+            )
+        ],
     ]
 
     layout = [
-        [sg.Frame("-NOTES-",  layout_notes)],
+        [sg.Frame("-NOTES-", layout_notes)],
     ]
-    window = sg.Window('Title', layout, finalize=True, use_default_focus=False)
+    window = sg.Window("Title", layout, finalize=True, use_default_focus=False)
     for element in window.key_dict.values():
         element.block_focus()
 
-    notes = window['-NOTES-'].Widget
+    notes = window["-NOTES-"].Widget
 
     HTML_OBJ = HTML_VIEWER()
     parsed_html = HTML_OBJ.set_html(notes, html)
@@ -66,7 +69,7 @@ if __name__ == "__main__":
 
     while True:
         event, values = window.read()
-        if event in (sg.WINDOW_CLOSED, 'Exit'):
+        if event in (sg.WINDOW_CLOSED, "Exit"):
             break
         print(event, values)
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# alt_layout.py 
+# alt_layout.py
 
 import random
 
@@ -12,9 +12,9 @@ from random_data import random_data
 
 sg.theme("Dark Gray 2")
 
-'''
+"""
 [["EQC-003746","2024-06-01","active","cash"],["AAA","111","222","333"]]
-'''
+"""
 
 
 def main():
@@ -59,9 +59,7 @@ def main():
             sg.Multiline(
                 size=(40, 25),
                 key="-NOTES-",
-                autoscroll_only_at_bottom=True,
                 right_click_menu=["&Right", ["Copy", "Paste"]],
-                wrap_lines=True,
                 disabled=True,
                 visible=True,
             ),
@@ -94,17 +92,18 @@ def main():
     # Add the ability to double-click a cell
     window["-TABLE-"].bind("<Double-Button-1>", "+-double click-")
     return window, table_values, values
-# Example  
+
+
+# Example
 if __name__ == "__main__":
     window, table, values = main()
     while True:
         event, values = window.read()
-        print(f'''
+        print(f"""
         event: {event}
         values: {values}
-        ''') # print(event, values)
-        if event == '-TABLE-':
+        """)  # print(event, values)
+        if event == "-TABLE-":
             gui["-NOTES-"].update(values["-TABLE-"])
         if event == sg.WIN_CLOSED or event == "-EXIT-":
             break
-    
