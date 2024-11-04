@@ -1,23 +1,25 @@
 import datetime
+import json
 from dataclasses import dataclass, field
+from pathlib import Path
 
 # from pathlib import Path
 import PySimpleGUI as sg
-
-from .tools import parse_dict_to_table
+from tools import parse_dict_to_table
 
 
 @dataclass
 class Layouts:
-    theme: str = field(default="Dark Gray 2")
-    jsonfile: str = field(default="./data/random_data.json", repr=False)
+    theme: str = field(default="Dark Gray 6")
+    jsonfile: Path = field(default=Path("./data/random_data.json").resolve())
 
-    def __post__init__(self) -> None:
+    def __post_init__(self) -> None:
         """Init shared settings for the layouts."""
         sg.theme(self.theme)
 
-    def main_layout(self, table_data: dict[str, dict[str, str]]) -> tuple[sg.Window, list, list]:
-        values = parse_dict_to_table(table_data)
+    def main_layout(self) -> tuple[sg.Window, list, list]:
+        data_dict = json.loads(self.jsonfile.read_text())
+        values = parse_dict_to_table(data_dict)
         table_values = [value[:-1] for value in values]
         # jsonfile = Path(jsonfile)
         # table_data = json.loads(jsonfile.read_text())

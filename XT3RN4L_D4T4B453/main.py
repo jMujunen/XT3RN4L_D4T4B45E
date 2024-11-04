@@ -1,23 +1,19 @@
 #!/usr/bin/env python3
 """Main entry point to this project. Running this starts the app."""
 
+import contextlib
+import json
 import operator
 import os
-import pprint
 import sys
 from pathlib import Path
 
 # Layouts
 import PySimpleGUI as sg
 
-from ..src import Layouts
-from ..src.data.random_data import random_data as random_data_dict
-
-# import data
-# Custom Modules
-from ..src.tools import HTMLVIEWER, EditCommands, parse_dict_to_table
-
-LAYOUTS = Layouts()
+# from data import random_data as random_data_dict
+from Layouts import Layouts
+from tools import HTMLVIEWER, EditCommands, parse_dict_to_table
 
 
 def main(table_values, raw_values):
@@ -33,8 +29,13 @@ def main(table_values, raw_values):
     global LOCAL_TABLE_VALUES  # noqa
     global LOCAL_RAW_VALUES  # noqa
 
+    global _placeholder_raw
+    global _placeholder_table
+
     LOCAL_RAW_VALUES = raw_values
     LOCAL_TABLE_VALUES = table_values
+
+    _placeholder_raw, _placeholder_table = LOCAL_RAW_VALUES, LOCAL_TABLE_VALUES
 
     # Convert header (row, col) to string representation
     header_list = [(-1, 0), (-1, 1), (-1, 2), (-1, 3)]
@@ -71,8 +72,11 @@ def main(table_values, raw_values):
 
         # Filtering table
         if event == "-FILTER-":
-            LOCAL_TABLE_VALUES, LOCAL_RAW_VALUES = filter_table(values["-FILTER-"])
-
+            LOCAL_TABLE_VALUES, LOCAL_RAW_VALUES = filter_table(
+                values["-FILTER-"], _placeholder_raw
+            )
+        if event == "-CLEAR-":
+            refresh()
         # Editing values of a row. Spawns a custom popup menu
         if event == "-EDIT-":
             try:
@@ -85,6 +89,7 @@ def main(table_values, raw_values):
             try:
                 row = LOCAL_RAW_VALUES[values["-TABLE-"][0]][:-1]
                 LOCAL_RAW_VALUES, LOCAL_TABLE_VALUES = save_to_file(row, notes=values["-NOTES-"])
+                _placeholder_raw, _placeholder_table = LOCAL_RAW_VALUES, LOCAL_TABLE_VALUES
             except IndexError:
                 sg.popup_ok("Please select a row to save")
             print("Stop")
@@ -169,18 +174,31 @@ def main(table_values, raw_values):
 
         # Sort table if header is clicked. Clicked column gets sorted
         # Additionally, Check if header was clicked and not the "row" column
-        if all(
-            (isinstance(event, tuple), event[0] == "-TABLE-", event[2][0] == -1, event[2][1] != -1)
-        ):
-            # TABLE CLICKED Event has value in format ('-TABLE=', '+CLICKED+', (row,col))
-            col_num_clicked = event[2][1]
-            LOCAL_TABLE_VALUES, LOCAL_RAW_VALUES = sort_table(
-                LOCAL_RAW_VALUES, (col_num_clicked, 0)
-            )
-            window["-TABLE-"].update(LOCAL_TABLE_VALUES)
+        with contextlib.suppress(IndexError, TypeError):
+            if all(
+                (
+                    isinstance(event, tuple),
+                    event[0] == "-TABLE-",
+                    event[2][0] == -1,
+                    event[2][1] != -1,
+                )
+            ):
+                # TABLE CLICKED Event has value in format ('-TABLE=', '+CLICKED+', (row,col))
+                col_num_clicked = event[2][1]
+                LOCAL_TABLE_VALUES, LOCAL_RAW_VALUES = sort_table(
+                    LOCAL_RAW_VALUES, (col_num_clicked, 0)
+                )
+                window["-TABLE-"].update(LOCAL_TABLE_VALUES)
 
         if event in (sg.WIN_CLOSED, "-EXIT-"):
             break
+
+
+def refresh() -> None:
+    window["-FILTER-"].update("")
+    window["-TABLE-"].update(_placeholder_table)
+    window["-MARKDOWN-"].update("")
+    window["-NOTES-"].update("")
 
 
 def remove_row(index) -> tuple[list, list]:
@@ -313,9 +331,8 @@ def edit_row(index: list, note: str) -> None:
                 ]
                 LOCAL_TABLE_VALUES[index[0]] = row[:-1]
                 LOCAL_RAW_VALUES[index[0]] = row
-                save_to_file(row)
-                window["-TABLE-"].update(LOCAL_TABLE_VALUES)
-                sg.popup_ok(f'Successfully edited {edit_values["-EDIT_UNIT_NUMBER-"]}')
+                save_to_file(row, notes=note)
+                # window["-TABLE-"].update(LOCAL_TABLE_VALUES)
             except Exception as e:
                 sg.popup_ok(f"Error: {e}")
                 break
@@ -330,7 +347,7 @@ def edit_row(index: list, note: str) -> None:
             edit_window.close()
             break
 
-    window["-TABLE-"].update(LOCAL_TABLE_VALUES)
+    # window["-TABLE-"].update(LOCAL_TABLE_VALUES)
 
 
 def sort_table(LOCAL_RAW_VALUES: list, cols: tuple) -> tuple:
@@ -365,16 +382,12 @@ def sort_table(LOCAL_RAW_VALUES: list, cols: tuple) -> tuple:
     return sorted_table, sorted_raw_values
 
 
-def filter_table(filter_value) -> tuple:
+def filter_table(filter_value, unmodified_raw_values: list) -> tuple:
     filtered_table = []
     filtered_raw_values = []
-    # filter_string = prefix + input
-    """
-    for row in LOCAL_TABLE_VALUES:
-        if filter_string in row[0]:
-            filtered_table.append(row)
-    """
-    for row in LOCAL_RAW_VALUES:
+
+    print(f"\033[32m{filter_value}\033[0m")
+    for row in unmodified_raw_values:
         if filter_value in row[0]:
             filtered_raw_values.append(row)
             filtered_table.append(row[:-1])
@@ -399,7 +412,9 @@ def display_html(notes, notes_edit_state, markdown_widget, HtmlViewer) -> None:
     return notes
 
 
-def save_to_file(values_list, remove=False, notes="") -> tuple[list[str], list[str]]:
+def save_to_file(
+    values_list, remove=False, notes="", jsonfile=Path("./data/random_data.json")
+) -> tuple[list[str], list[str]]:
     """Save values to a file.
 
     Parameters
@@ -410,10 +425,12 @@ def save_to_file(values_list, remove=False, notes="") -> tuple[list[str], list[s
     Returns
         str: notes.
     """
+
     unit_number = values_list[0]
     due_date = values_list[1]
     status = values_list[2]
     sale_type = values_list[3]
+    random_data_dict = json.loads(jsonfile.read_text())
 
     if unit_number not in random_data_dict:
         print(f"Adding {unit_number}")
@@ -437,21 +454,21 @@ def save_to_file(values_list, remove=False, notes="") -> tuple[list[str], list[s
                 "notes": notes,
             }
         )
-
-    with open("random_data.py", "w") as f:
-        f.write("random_data = " + pprint.pformat(random_data_dict))
+    jsonfile.write_text(json.dumps(random_data_dict))
 
     LOCAL_RAW_VALUES = parse_dict_to_table(random_data_dict)
     LOCAL_TABLE_VALUES = [row[:-1] for row in LOCAL_RAW_VALUES]
-
     window["-TABLE-"].update(LOCAL_TABLE_VALUES)
-    window["-NOTES-"].update(notes)
-    window["-MARKDOWN-"].update(notes)
+    window["-NOTES-"].update("")
+    window["-MARKDOWN-"].update("")
+    window["-FILTER-"].update("")
+    sg.popup_ok("Success!")
 
     return LOCAL_RAW_VALUES, LOCAL_TABLE_VALUES
 
 
 if __name__ == "__main__":
+    LAYOUTS = Layouts()
     window, global_table_values, global_raw_values = LAYOUTS.main_layout()
     main(global_table_values, global_raw_values)
     window.close()
