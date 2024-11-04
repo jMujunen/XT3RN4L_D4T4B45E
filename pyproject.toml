@@ -1,0 +1,11 @@
+[project]
+name = "XT3RN4L_D4T4B453"
+version = "0.1.0"
+description = "Python GUI for custom data entry"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "markdown>=3.7",
+    "pysimplegui>=5.0.6",
+    "tkhtmlview>=0.3.1",
+]
