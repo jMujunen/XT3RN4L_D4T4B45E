@@ -1,10 +1,3 @@
-#!/usr/bin/env python3
-
-# edit_layout.py - Popup edit menu
-
-import os
-import sys
-
 import PySimpleGUI as sg
 
 sg.theme("DarkGrey6")

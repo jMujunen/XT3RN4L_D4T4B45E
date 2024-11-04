@@ -2,13 +2,14 @@
 
 # add_layout.py - Popup menu for adding a new entry
 
-import PySimpleGUI as sg
 import datetime
+
+import PySimpleGUI as sg
 
 sg.theme("DarkGrey6")
 
 
-def layout():
+def layout() -> sg.Window:
     layout = [
         [
             sg.Text("Unit Number"),
@@ -50,9 +51,7 @@ def layout():
         ],
     ]
 
-    window = sg.Window("Add Layout", layout)
-
-    return window
+    return sg.Window("Add Layout", layout)
 
 
 # Example
@@ -61,12 +60,12 @@ if __name__ == "__main__":
     while True:
         event, values = window.read()
         print(event, values)
-        if event == sg.WIN_CLOSED or event == "-ADD_MENU_CANCEL-":
+        if event in (sg.WIN_CLOSED, "-ADD_MENU_CANCEL-"):
             break
         if event == "-ADD_MENU_SAVE-":
             try:
-                sg.popup_ok(f'Successfully added {values["-ADD_UNIT_NUMBER-"]}', size=(20, 1))
-            except:
-                sg.popup_error(f'Failed to save {values["-ADD_UNIT_NUMBER-"]}')
+                sg.popup_ok(f'Successfully added {values["-ADD_UNIT_NUMBER-"]}')
+            except Exception as e:
+                sg.popup_error(f'{e!r} - Failed to save {values["-ADD_UNIT_NUMBER-"]}')
 
     window.close()
