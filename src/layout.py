@@ -1,27 +1,14 @@
-#!/usr/bin/env python3
-
-# alt_layout.py
-
-import random
-
-import PySimpleGUI as sg
-from tkhtmlview import html_parser
-
 import data
-from random_data import random_data
+import PySimpleGUI as sg
+
+from .utils.random_data import random_data
 
 sg.theme("Dark Gray 2")
 
-"""
-[["EQC-003746","2024-06-01","active","cash"],["AAA","111","222","333"]]
-"""
 
-
-def main():
+def main() -> tuple[sg.Window, list, list]:
     values = data.parse_dict_to_table(random_data)
-    table_values = []
-    for value in values:
-        table_values.append(value[:-1])
+    table_values = [value[:-1] for value in values]
 
     search_column = [
         [
@@ -105,5 +92,5 @@ if __name__ == "__main__":
         """)  # print(event, values)
         if event == "-TABLE-":
             gui["-NOTES-"].update(values["-TABLE-"])
-        if event == sg.WIN_CLOSED or event == "-EXIT-":
+        if event in (sg.WIN_CLOSED, "-EXIT-"):
             break

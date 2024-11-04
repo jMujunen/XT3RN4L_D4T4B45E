@@ -3,14 +3,9 @@ import PySimpleGUI as sg
 sg.theme("DarkGrey6")
 
 
-def layout(unit_number, due_date, status, sale_type):
-    if not due_date:
-        due_date = ""
-    if not status:
-        status = ""
-    if not sale_type:
-        sale_type = ""
-
+def layout(
+    unit_number: str, due_date: str = "", status: str = "", sale_type: str = ""
+) -> sg.Window:
     layout = [
         [
             sg.Text("Unit Number"),
@@ -69,9 +64,7 @@ def layout(unit_number, due_date, status, sale_type):
         ],
     ]
 
-    window = sg.Window("Edit Layout", layout)
-
-    return window
+    return sg.Window("Edit Layout", layout)
 
 
 # Example
@@ -80,6 +73,6 @@ if __name__ == "__main__":
     while True:
         event, values = window.read()
         print(event, values)
-        if event == sg.WIN_CLOSED or event == "-EDIT_MENU_CANCEL-":
+        if event in (sg.WIN_CLOSED, "-EDIT_MENU_CANCEL-"):
             break
     window.close()
