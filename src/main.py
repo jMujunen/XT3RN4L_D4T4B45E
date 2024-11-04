@@ -1,44 +1,37 @@
 #!/usr/bin/env python3
+"""Main entry point to this project. Running this starts the app."""
 
-# main.py - Main entry point to this project. Running this starts the app
-
-import sys
-import os
-import string
 import operator
-
-# External libraries
-from tkhtmlview import html_parser
-import markdown
+import os
 import pprint
-import PySimpleGUI as sg
+import sys
+from pathlib import Path
 
 # Layouts
-import layout
-import edit_layout
-import add_layout
-import data
-from random_data import random_data as random_data_dict
+import PySimpleGUI as sg
 
+from ..src import Layouts
+from ..src.data.random_data import random_data as random_data_dict
+
+# import data
 # Custom Modules
-from RandomValues import RandomValues
-import Html_Viewer
-from EditCommands import EditCommands
+from ..src.tools import HTMLVIEWER, EditCommands, parse_dict_to_table
+
+LAYOUTS = Layouts()
 
 
 def main(table_values, raw_values):
-    """
-    A function that takes two input parameters, table_values and raw_values,
+    """Take two input parameters, table_values and raw_values,
     and performs a series of operations including creating a dictionary,
     filtering a table, editing a row, sorting a table, and handling window events
     until the event is a window closure or an exit event.
 
-    Parameters:
+    Parameters
         table_values (list): A nexted list (array) representing the table data excluding notes.
         raw_values (list): A nexted list (array) representing the raw data, including notes.
     """
-    global LOCAL_TABLE_VALUES
-    global LOCAL_RAW_VALUES
+    global LOCAL_TABLE_VALUES  # noqa
+    global LOCAL_RAW_VALUES  # noqa
 
     LOCAL_RAW_VALUES = raw_values
     LOCAL_TABLE_VALUES = table_values
@@ -49,7 +42,7 @@ def main(table_values, raw_values):
 
     markdown_widget = window["-MARKDOWN-"].Widget
     _width, _height = markdown_widget.winfo_width(), markdown_widget.winfo_height()
-    HTML_OBJ = Html_Viewer.HTML_VIEWER()
+    HTML_OBJ = HTMLVIEWER()
     parsed_markdown = HTML_OBJ.markdown2html(LOCAL_RAW_VALUES[0][4])
     HTML_OBJ.set_html(markdown_widget, parsed_markdown, strip=False)
     _width, _height = markdown_widget.winfo_width(), markdown_widget.winfo_height()
@@ -141,51 +134,64 @@ def main(table_values, raw_values):
         if event in (window["-REMOVE-"], "CTRL-y"):
             editor_commands.redo()
         # Show notes depending on row selected.
-        if event:
-            if "-TABLE-" in event:
-                if "+CLICKED+" in event:
-                    try:
-                        table_last_clicked = values["-TABLE-"][0]
-                        note = (LOCAL_RAW_VALUES[table_last_clicked])[-1]
-                        display_html(note, False, markdown_widget, HTML_OBJ)
+        if event and all(("-TABLE-" in event, "+CLICKED+" in event)):
+            try:
+                table_last_clicked = values["-TABLE-"][0]
+                note = (LOCAL_RAW_VALUES[table_last_clicked])[-1]
+                display_html(
+                    notes=note,
+                    notes_edit_state=False,
+                    markdown_widget=markdown_widget,
+                    HtmlViewer=HTML_OBJ,
+                )
 
-                        if values["-EDIT_NOTES-"] is False:
-                            html = display_html(note, False, markdown_widget, HTML_OBJ)
-                            window["-MARKDOWN-"].update(html)
-                        else:
-                            note = display_html(note, True, markdown_widget, HTML_OBJ)
-                            raw_markdown_widget.update(note)
+                if values["-EDIT_NOTES-"] is False:
+                    html = display_html(
+                        notes=note,
+                        notes_edit_state=False,
+                        markdown_widget=markdown_widget,
+                        HtmlViewer=HTML_OBJ,
+                    )
+                    window["-MARKDOWN-"].update(html)
+                else:
+                    note = display_html(
+                        notes=note,
+                        notes_edit_state=True,
+                        markdown_widget=markdown_widget,
+                        HtmlViewer=HTML_OBJ,
+                    )
+                    raw_markdown_widget.update(note)
 
-                    except IndexError:
-                        pass
-                    except TypeError:
-                        pass
+            except IndexError:
+                pass
+            except TypeError:
+                pass
 
         # Sort table if header is clicked. Clicked column gets sorted
-        if isinstance(event, tuple):
+        # Additionally, Check if header was clicked and not the "row" column
+        if all(
+            (isinstance(event, tuple), event[0] == "-TABLE-", event[2][0] == -1, event[2][1] != -1)
+        ):
             # TABLE CLICKED Event has value in format ('-TABLE=', '+CLICKED+', (row,col))
-            # You can also call Table.get_last_clicked_position to get the cell clicked
-            if event[0] == "-TABLE-":
-                # Check if header was clicked and not the "row" column
-                if event[2][0] == -1 and event[2][1] != -1:
-                    col_num_clicked = event[2][1]
-                    LOCAL_TABLE_VALUES, LOCAL_RAW_VALUES = sort_table(
-                        LOCAL_RAW_VALUES, (col_num_clicked, 0)
-                    )
-                    window["-TABLE-"].update(LOCAL_TABLE_VALUES)
+            col_num_clicked = event[2][1]
+            LOCAL_TABLE_VALUES, LOCAL_RAW_VALUES = sort_table(
+                LOCAL_RAW_VALUES, (col_num_clicked, 0)
+            )
+            window["-TABLE-"].update(LOCAL_TABLE_VALUES)
 
-        if event == sg.WIN_CLOSED or event == "-EXIT-":
+        if event in (sg.WIN_CLOSED, "-EXIT-"):
             break
 
 
-def remove_row(index):
-    try:
-        os.system("clear")
-        print(index)
-    except:
-        os.system("cls")
-        print(index)
-
+def remove_row(index) -> tuple[list, list]:
+    """Remove a row from table."""
+    # DEBUG
+    match sys.platform:
+        case "linux":
+            os.system("clear")
+        case _:
+            os.system("cls")
+    print(index)  # DEBUG
     row = LOCAL_TABLE_VALUES[index[0]]
     if sg.popup_ok_cancel(f"Are you sure you want to remove {row[0]}?") == "OK":
         print(f"Removing {row[0]}")
@@ -204,8 +210,8 @@ def remove_row(index):
     return LOCAL_TABLE_VALUES, LOCAL_RAW_VALUES
 
 
-def add_row():
-    add_window = add_layout.layout()
+def add_row() -> None:
+    add_window = LAYOUTS.add_item_layout()
     while True:
         add_event, add_values = add_window.read()
 
@@ -252,7 +258,7 @@ def add_row():
                 window["-TABLE-"].update(LOCAL_TABLE_VALUES)
                 sg.popup_ok(f'Successfully added {add_values["-ADD_UNIT_NUMBER-"]}')
                 break
-            if add_event == sg.WIN_CLOSED or add_event == "-ADD_MENU_CANCEL-":
+            if add_event in (sg.WIN_CLOSED, "-ADD_MENU_CANCEL-"):
                 break
         except Exception as e:
             sg.popup_ok(f"Error: {e}")
@@ -261,24 +267,22 @@ def add_row():
     add_window.close()
 
 
-def edit_row(index, note):
-    """
-    Edit a row in the table based on the given index.
+def edit_row(index: list, note: str) -> None:
+    """Edit a row in the table based on the given index.
 
-    Parameters:
-        index (int): The index of the row to be edited.
-
-    Returns:
-        None
+    Parameters
+        index (list): The index of the row to be edited.
+        note (str): The new value for the row.
     """
-    try:
-        os.system("clear")
-        print(index)
-    except:
-        os.system("cls")
-        print(index)
+    # DEBUG
+    match sys.platform:
+        case "linux":
+            os.system("clear")
+        case _:
+            os.system("cls")
+    print(index)  # DEBUG
     row = LOCAL_TABLE_VALUES[index[0]]
-    edit_window = edit_layout.layout(row[0], row[1], row[2], row[3])
+    edit_window = LAYOUTS.edit_item_layout(row[0], row[1], row[2], row[3])
 
     while True:
         edit_event, edit_values = edit_window.read()
@@ -329,15 +333,14 @@ def edit_row(index, note):
     window["-TABLE-"].update(LOCAL_TABLE_VALUES)
 
 
-def sort_table(LOCAL_RAW_VALUES, cols):
-    """
-    Sorts a table by the clicked column in ascending and descending order.
+def sort_table(LOCAL_RAW_VALUES: list, cols: tuple) -> tuple:
+    """Sorts a table by the clicked column in ascending and descending order.
 
-    Parameters:
+    Parameters
         LOCAL_RAW_VALUES (list): The raw values of the table.
         cols (tuple): The columns to sort by.
 
-    Returns:
+    Returns
         tuple: A tuple containing the sorted table (list) and the raw values (list).
     """
 
@@ -361,28 +364,8 @@ def sort_table(LOCAL_RAW_VALUES, cols):
     sorted_table = sorted_raw_values[0:][:-1]
     return sorted_table, sorted_raw_values
 
-    """
-    sorted_raw_values = sorted(LOCAL_RAW_VALUES, key=lambda x: x[sort_by])
-    sorted_table_values = sorted(LOCAL_TABLE_VALUES, key=lambda x: x[sort_by])
-    window['-TABLE-'].update(sorted_table_values)
-    return sorted_raw_values, sorted_table_values
-    """
-    # Access the tuple associated with a specific string value
-    """
-    print(string_tuple_dict['unit'])  # Output: (-1, 0)
-    print(string_tuple_dict['date'])  # Output: (-1, 1)
-    print(string_tuple_dict['status'])  # Output: (-1, 2)
-    """
 
-    # Access the string value associated with a specific tuple
-    """
-    print(tuple_string_dict[(-1, 0)])  # Output: 'unit'
-    print(tuple_string_dict[(-1, 1)])  # Output: 'date'
-    print(tuple_string_dict[(-1, 2)])  # Output: 'status'
-    """
-
-
-def filter_table(filter_value):
+def filter_table(filter_value) -> tuple:
     filtered_table = []
     filtered_raw_values = []
     # filter_string = prefix + input
@@ -399,34 +382,32 @@ def filter_table(filter_value):
     return filtered_table, filtered_raw_values
 
 
-def display_html(notes, notes_edit_state, markdown_widget, HTML_VIEWER):
+def display_html(notes, notes_edit_state, markdown_widget, HtmlViewer) -> None:
     # Parse markdown to HTML
     if notes_edit_state is False:
-        html_content = HTML_VIEWER.markdown2html(notes)
-        parsed_html = HTML_VIEWER.set_html(markdown_widget, html_content)
+        html_content = HtmlViewer.markdown2html(notes)
+        parsed_html = HtmlViewer.set_html(markdown_widget, html_content)
 
         window["-NOTES-"].update(visible=False, disabled=True)
         window["-MARKDOWN-"].update(visible=True, disabled=True)
         window["-MARKDOWN-"].update(parsed_html)
         _width, _height = markdown_widget.winfo_width(), markdown_widget.winfo_height()
         return parsed_html
-    else:
-        window["-MARKDOWN-"].update(visible=False)
-        window["-NOTES-"].update(visible=True, disabled=False)
-        window["-NOTES-"].update(notes)
-        return notes
+    window["-MARKDOWN-"].update(visible=False)
+    window["-NOTES-"].update(visible=True, disabled=False)
+    window["-NOTES-"].update(notes)
+    return notes
 
 
-def save_to_file(values_list, remove=False, notes=""):
-    """
-    Save values to a file.
+def save_to_file(values_list, remove=False, notes="") -> tuple[list[str], list[str]]:
+    """Save values to a file.
 
-    Parameters:
+    Parameters
         values_list (list): List of values to save.
         remove (bool): Whether to remove the values from the file.
         notes (str): Additional notes.
 
-    Returns:
+    Returns
         str: notes.
     """
     unit_number = values_list[0]
@@ -460,7 +441,7 @@ def save_to_file(values_list, remove=False, notes=""):
     with open("random_data.py", "w") as f:
         f.write("random_data = " + pprint.pformat(random_data_dict))
 
-    LOCAL_RAW_VALUES = data.parse_dict_to_table(random_data_dict)
+    LOCAL_RAW_VALUES = parse_dict_to_table(random_data_dict)
     LOCAL_TABLE_VALUES = [row[:-1] for row in LOCAL_RAW_VALUES]
 
     window["-TABLE-"].update(LOCAL_TABLE_VALUES)
@@ -470,7 +451,7 @@ def save_to_file(values_list, remove=False, notes=""):
     return LOCAL_RAW_VALUES, LOCAL_TABLE_VALUES
 
 
-# RandomValues(200).write_to_dict()
-window, global_table_values, global_raw_values = layout.main()
-main(global_table_values, global_raw_values)
-window.close()
+if __name__ == "__main__":
+    window, global_table_values, global_raw_values = LAYOUTS.main_layout()
+    main(global_table_values, global_raw_values)
+    window.close()

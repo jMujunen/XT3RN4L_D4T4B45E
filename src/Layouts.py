@@ -1,20 +1,26 @@
 import datetime
+from dataclasses import dataclass, field
 
-import data as data
+# from pathlib import Path
 import PySimpleGUI as sg
 
-from .utils.random_data import random_data
+from .tools import parse_dict_to_table
 
 
+@dataclass
 class Layouts:
-    def __init__(self, theme="Dark Gray 2") -> None:
+    theme: str = field(default="Dark Gray 2")
+    jsonfile: str = field(default="./data/random_data.json", repr=False)
+
+    def __post__init__(self) -> None:
         """Init shared settings for the layouts."""
-        sg.theme(theme)
+        sg.theme(self.theme)
 
     def main_layout(self, table_data: dict[str, dict[str, str]]) -> tuple[sg.Window, list, list]:
-        values = data.parse_dict_to_table(random_data)
+        values = parse_dict_to_table(table_data)
         table_values = [value[:-1] for value in values]
-
+        # jsonfile = Path(jsonfile)
+        # table_data = json.loads(jsonfile.read_text())
         search_column = [
             [
                 sg.Text("Search"),
