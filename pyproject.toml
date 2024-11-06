@@ -9,3 +9,4 @@ dependencies = [
     "pysimplegui>=5.0.6",
     "tkhtmlview>=0.3.1",
 ]
+
