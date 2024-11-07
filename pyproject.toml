@@ -1,12 +1,28 @@
 [project]
-name = "XT3RN4L_D4T4B453"
+name = "xt3rn4l-d4t4b453"
 version = "0.1.0"
-description = "Python GUI for custom data entry"
+description = "Add your description here"
 readme = "README.md"
+authors = [
+    { name = "jMujunen", email = "jMujunen@github.com" }
+]
 requires-python = ">=3.12"
 dependencies = [
-    "markdown>=3.7",
-    "pysimplegui>=5.0.6",
-    "tkhtmlview>=0.3.1",
+    "charset-normalizer==3.3.2",
+    "keyboard>=0.13.5",
+    "markdown==3.7",
+    "pysimplegui==5.0.6",
+    "requests==2.32.3",
+    "tkhtmlview==0.3.1",
 ]
 
+
+[tool.uv]
+package = false
+cache-dir = "./.uv_cache"
+link-mode = "symlink"
+[tool.uv.pip]
+link-mode = "symlink"
+universal = true
+upgrade = true
+strict = true
