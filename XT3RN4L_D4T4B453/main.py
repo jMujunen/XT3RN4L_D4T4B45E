@@ -15,6 +15,10 @@ import PySimpleGUI as sg
 from Layouts import Layouts
 from tools import HTMLVIEWER, EditCommands, parse_dict_to_table
 
+CLS = "cls" if sys.platform == "Windows" else "clear"
+MAX_UNIT_LEN = 10
+MIN_UNIT_LEN = 4
+
 
 def main(table_values, raw_values):
     """Take two input parameters, table_values and raw_values,
@@ -130,13 +134,13 @@ def main(table_values, raw_values):
                     # Error handling if no row is selected
                     pass
         # Hotkeys
-        if event in (window["-TABLE-"], "ALT-o"):
+        if event in {window["-TABLE-"], "ALT-o"}:
             print("OK")
-        if event in (window["-ADD-"], "ALT-x"):
+        if event in {window["-ADD-"], "ALT-x"}:
             break
-        if event in (window["-EDIT-"], "CTRL-z"):
+        if event in {window["-EDIT-"], "CTRL-z"}:
             editor_commands.undo()
-        if event in (window["-REMOVE-"], "CTRL-y"):
+        if event in {window["-REMOVE-"], "CTRL-y"}:
             editor_commands.redo()
         # Show notes depending on row selected.
         if event and all(("-TABLE-" in event, "+CLICKED+" in event)):
@@ -190,7 +194,7 @@ def main(table_values, raw_values):
                 )
                 window["-TABLE-"].update(LOCAL_TABLE_VALUES)
 
-        if event in (sg.WIN_CLOSED, "-EXIT-"):
+        if event in {sg.WIN_CLOSED, "-EXIT-"}:
             break
 
 
@@ -238,10 +242,10 @@ def add_row() -> None:
         # each time the input is changed. If it is greater than 10, the 11th
         # character will be removed.
         try:
-            if len(add_values["-ADD_UNIT_NUMBER-"]) > 10:
+            if len(add_values["-ADD_UNIT_NUMBER-"]) > MAX_UNIT_LEN:
                 add_values["-ADD_UNIT_NUMBER-"] = add_values["-ADD_UNIT_NUMBER-"][:10]
                 add_window["-ADD_UNIT_NUMBER-"].update(add_values["-ADD_UNIT_NUMBER-"])
-            elif len(add_values["-ADD_UNIT_NUMBER-"]) < 4:
+            elif len(add_values["-ADD_UNIT_NUMBER-"]) < MIN_UNIT_LEN:
                 add_window["-ADD_UNIT_NUMBER-"].update("EQC-")
         except ValueError:
             break
@@ -259,7 +263,7 @@ def add_row() -> None:
                 if add_values["-ADD_UNIT_NUMBER-"] in [row[0] for row in LOCAL_TABLE_VALUES]:
                     sg.popup_ok("Unit number already exists")
                     continue
-                if len(add_values["-ADD_UNIT_NUMBER-"]) != 10:
+                if len(add_values["-ADD_UNIT_NUMBER-"]) != MAX_UNIT_LEN:
                     sg.popup_ok("Unitnumber must be 10 characters (6 digits) long")
                     continue
 
@@ -276,7 +280,7 @@ def add_row() -> None:
                 window["-TABLE-"].update(LOCAL_TABLE_VALUES)
                 sg.popup_ok(f'Successfully added {add_values["-ADD_UNIT_NUMBER-"]}')
                 break
-            if add_event in (sg.WIN_CLOSED, "-ADD_MENU_CANCEL-"):
+            if add_event in {sg.WIN_CLOSED, "-ADD_MENU_CANCEL-"}:
                 break
         except Exception as e:
             sg.popup_ok(f"Error: {e}")
@@ -292,13 +296,11 @@ def edit_row(index: list, note: str) -> None:
         index (list): The index of the row to be edited.
         note (str): The new value for the row.
     """
+
     # DEBUG
-    match sys.platform:
-        case "linux":
-            os.system("clear")
-        case _:
-            os.system("cls")
-    print(index)  # DEBUG
+    os.system(CLS)
+    print(index)
+
     row = LOCAL_TABLE_VALUES[index[0]]
     edit_window = LAYOUTS.edit_item_layout(row[0], row[1], row[2], row[3])
 
@@ -310,10 +312,10 @@ def edit_row(index: list, note: str) -> None:
         # each time the input is changed. If it is greater than 10, the 11th
         # character will be removed.
         try:
-            if len(edit_values["-EDIT_UNIT_NUMBER-"]) > 10:
+            if len(edit_values["-EDIT_UNIT_NUMBER-"]) > MAX_UNIT_LEN:
                 edit_values["-EDIT_UNIT_NUMBER-"] = edit_values["-EDIT_UNIT_NUMBER-"][:10]
                 edit_window["-EDIT_UNIT_NUMBER-"].update(edit_values["-EDIT_UNIT_NUMBER-"])
-            elif len(edit_values["-EDIT_UNIT_NUMBER-"]) < 4:
+            elif len(edit_values["-EDIT_UNIT_NUMBER-"]) < MIN_UNIT_LEN:
                 edit_window["-EDIT_UNIT_NUMBER-"].update("EQC-")
         except Exception as e:
             print(e)
@@ -333,6 +335,7 @@ def edit_row(index: list, note: str) -> None:
                 LOCAL_RAW_VALUES[index[0]] = row
                 save_to_file(row, notes=note)
                 # window["-TABLE-"].update(LOCAL_TABLE_VALUES)
+                sg.popup("Done")
             except Exception as e:
                 sg.popup_ok(f"Error: {e}")
                 break
@@ -367,8 +370,9 @@ def sort_table(LOCAL_RAW_VALUES: list, cols: tuple) -> tuple:
             sorted_raw_values = sorted(LOCAL_RAW_VALUES, key=operator.itemgetter(col))
         except Exception as e:
             sg.popup_error("Error in sort_table", "Exception in sort_table", e)
+            return ()
     # Sort by clicked column, decending order
-    if sorted_raw_values == LOCAL_RAW_VALUES:
+    if sorted_raw_values == LOCAL_RAW_VALUES:  # type: ignore
         for col in reversed(cols):
             try:
                 sorted_raw_values = sorted(
@@ -376,13 +380,13 @@ def sort_table(LOCAL_RAW_VALUES: list, cols: tuple) -> tuple:
                 )
             except Exception as e:
                 sg.popup_error("Error in sort_table", "Exception in sort_table", e)
-    LOCAL_RAW_VALUES = sorted_raw_values
+    LOCAL_RAW_VALUES = sorted_raw_values  # type: ignore
     LOCAL_RAW_VALUES[0:][:-1]
-    sorted_table = sorted_raw_values[0:][:-1]
-    return sorted_table, sorted_raw_values
+    sorted_table = sorted_raw_values[0:][:-1]  # type: ignore
+    return sorted_table, sorted_raw_values  # type: ignore[unbound]
 
 
-def filter_table(filter_value, unmodified_raw_values: list) -> tuple:
+def filter_table(filter_value: str, unmodified_raw_values: list) -> tuple:
     filtered_table = []
     filtered_raw_values = []
 
@@ -459,10 +463,9 @@ def save_to_file(
     LOCAL_RAW_VALUES = parse_dict_to_table(random_data_dict)
     LOCAL_TABLE_VALUES = [row[:-1] for row in LOCAL_RAW_VALUES]
     window["-TABLE-"].update(LOCAL_TABLE_VALUES)
-    window["-NOTES-"].update("")
-    window["-MARKDOWN-"].update("")
-    window["-FILTER-"].update("")
-    sg.popup_ok("Success!")
+    # window["-NOTES-"].update("")
+    # window["-MARKDOWN-"].update("")
+    # window["-FILTER-"].update("")
 
     return LOCAL_RAW_VALUES, LOCAL_TABLE_VALUES
 

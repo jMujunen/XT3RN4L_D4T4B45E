@@ -23,7 +23,8 @@ class HTMLVIEWER:
         self.parser.w_set_html(widget, html, strip=strip)
         widget.config(state=prev_state)
 
-    def markdown2html(self, markdown_content) -> str:
+    @staticmethod
+    def markdown2html(markdown_content) -> str:
         return markdown.markdown(str(markdown_content))
 
 
@@ -47,13 +48,20 @@ def parse_dict_to_table(data: dict) -> list[str]:
 class RandomValues:
     number_of_values: int = field(default=1)
 
-    def generate_random_unit_number(self) -> str:
-        """Generate a random unit number in the format 'EQC-XXXXXX' where X is a six digit number."""
+    @staticmethod
+    def generate_random_unit_number() -> str:
+        """Generate a random unit number in the format 'EQC-XXXXXX'."""
         rng = random.randint(0, 999999)
         return f"EQC-{rng:06d}"
 
-    def generate_random_due_date(self) -> str:
-        """Generate a random due date within the range of '2024-04-01' to '2027-01-01'. Returns an empty string with 50% chance."""
+    @staticmethod
+    def generate_random_due_date() -> str:
+        """Generate a random due date within the range of '2024-04-01' to '2027-01-01'.
+
+        Returns
+        -------
+            str: Empty string with 50% chance.
+        """
         if random.choice([True, False]):
             start_date = datetime(2024, 4, 1)
             end_date = datetime(2027, 1, 1)
@@ -61,11 +69,13 @@ class RandomValues:
             return random_date.strftime("%Y-%m-%d")
         return ""
 
-    def generate_random_status(self) -> str:
+    @staticmethod
+    def generate_random_status() -> str:
         """Generate a random status from the choices: 'Active', 'Ready', and 'Damaged'."""
         return random.choice(["Active", "Ready", "Damaged"])
 
-    def generate_random_sale_type(self) -> str:
+    @staticmethod
+    def generate_random_sale_type() -> str:
         if random.choice([True, False]):
             return random.choice(["Cash", "Net30"])
         return ""
@@ -82,7 +92,7 @@ class RandomValues:
             while not sale_type:
                 sale_type = self.generate_random_sale_type()
 
-        if any((not due_date, status in ("Damaged", "Ready"), not sale_type)):
+        if any((not due_date, status in {"Damaged", "Ready"}, not sale_type)):
             return [self.unit_number, "", status, ""]
         return [self.unit_number, due_date, status, sale_type]
 

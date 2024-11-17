@@ -21,8 +21,6 @@ class Layouts:
         data_dict = json.loads(self.jsonfile.read_text())
         values = parse_dict_to_table(data_dict)
         table_values = [value[:-1] for value in values]
-        # jsonfile = Path(jsonfile)
-        # table_data = json.loads(jsonfile.read_text())
         search_column = [
             [
                 sg.Text("Search"),
@@ -93,7 +91,8 @@ class Layouts:
         window["-TABLE-"].bind("<Double-Button-1>", "+-double click-")
         return window, table_values, values
 
-    def add_item_layout(self) -> sg.Window:
+    @staticmethod
+    def add_item_layout() -> sg.Window:
         layout = [
             [
                 sg.Text("Unit Number"),
@@ -137,7 +136,8 @@ class Layouts:
 
         return sg.Window("Add Layout", layout)
 
-    def edit_item_layout(self, unit_number: str, due_date="", status="", sale_type="") -> sg.Window:
+    @staticmethod
+    def edit_item_layout(unit_number: str, due_date="", status="", sale_type="") -> sg.Window:
         layout = [
             [
                 sg.Text("Unit Number"),
