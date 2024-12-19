@@ -28,6 +28,7 @@ from PySide6.QtWidgets import (
     QTextEdit,
     QVBoxLayout,
     QWidget,
+    QHeaderView,
 )
 from pyside_layout import MainWindow as MAIN
 from tools import parse_dict_to_table
@@ -112,8 +113,6 @@ class MainWindow(QMainWindow):
         info_column = QVBoxLayout()
         info_column.addWidget(QLabel("Notes"))
 
-
-
         self.notes_text = QTextEdit()
         self.notes_text.setReadOnly(True)
         self.save_button = QPushButton("Save")
@@ -122,7 +121,7 @@ class MainWindow(QMainWindow):
         self.markdown_label.setWordWrap(True)
 
         self.markdown_label.setFixedHeight(300)
-t
+
         info_column.addWidget(self.notesToggleReadOnly)
         info_column.addWidget(self.notes_text)
         info_column.addWidget(self.save_button)
@@ -153,21 +152,21 @@ t
         self.setCentralWidget(mainwidget)
 
         # Menu
-        menubar = QMenuBar()
-        filemenu = menubar.addMenu("File")
-        editmenu = menubar.addMenu("Edit")
-        self.setMenuBar(menubar)
+        menuBar = QMenuBar()
+        fileMenu = menuBar.addMenu("File")
+        editMenu = menuBar.addMenu("Edit")
+        self.setMenuBar(menuBar)
 
         # Actions
-        self.addaction = QAction("Add")
-        self.editaction = QAction("Edit")
-        self.editaction = QAction("Edit")
-        self.removeaction = QAction("Remove")
-        self.saveaction = QAction("Save")
-        filemenu.addAction(self.addaction)
-        editmenu.addAction(self.editaction)
-        editmenu.addAction(self.removeaction)
-        editmenu.addAction(self.saveaction)
+        self.addActions = QAction("Add")
+        self.editAction = QAction("Edit")
+        self.editAction = QAction("Edit")
+        self.removeAction = QAction("Remove")
+        self.saveAction = QAction("Save")
+        fileMenu.addAction(self.addActions)
+        editMenu.addAction(self.editaction)
+        editMenu.addAction(self.removeaction)
+        editMenu.addAction(self.saveaction)
 
         # Layout
         main_layout.addLayout(filter_layout)
@@ -390,9 +389,12 @@ t
         elif remove:
             del random_data_dict[unit_number]
         else:
-            random_data_dict[unit_number].update(
-                {"due date": due_date, "status": status, "sale type": sale_type, "notes": notes}
-            )
+            random_data_dict[unit_number].update({
+                "due date": due_date,
+                "status": status,
+                "sale type": sale_type,
+                "notes": notes,
+            })
 
         jsonfile.write_text(json.dumps(random_data_dict))
         self.update_table()

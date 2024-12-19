@@ -12,6 +12,7 @@ dependencies = [
     "keyboard>=0.13.5",
     "markdown==3.7",
     "pyside6>=6.8.0.2",
+    "qmarkdownview>=0.2",
     "requests==2.32.3",
     "tk>=0.1.0",
     "tkhtmlview==0.3.1",

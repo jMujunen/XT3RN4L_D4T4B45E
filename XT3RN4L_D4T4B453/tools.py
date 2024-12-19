@@ -7,7 +7,6 @@ from datetime import datetime
 from pathlib import Path
 
 import markdown
-import PySimpleGUI as sg
 from tkhtmlview import html_parser
 
 
@@ -17,8 +16,8 @@ class HTMLVIEWER:
 
     def set_html(self, widget, html, strip=True) -> None:
         prev_state = widget.cget("state")
-        widget.config(state=sg.tk.NORMAL)
-        widget.delete("1.0", sg.tk.END)
+        widget.config()
+        widget.delete("1.0")
         widget.tag_delete(widget.tag_names)
         self.parser.w_set_html(widget, html, strip=strip)
         widget.config(state=prev_state)
