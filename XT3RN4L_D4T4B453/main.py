@@ -122,7 +122,7 @@ class MainWindow(QMainWindow):
 
         self.markdown_label.setFixedHeight(300)
 
-        info_column.addWidget(self.notesToggleReadOnly)
+        # info_column.addWidget(self.notesToggleReadOnly)
         info_column.addWidget(self.notes_text)
         info_column.addWidget(self.save_button)
         info_column.addWidget(self.markdown_label)
@@ -160,19 +160,18 @@ class MainWindow(QMainWindow):
         # Actions
         self.addActions = QAction("Add")
         self.editAction = QAction("Edit")
-        self.editAction = QAction("Edit")
         self.removeAction = QAction("Remove")
         self.saveAction = QAction("Save")
         fileMenu.addAction(self.addActions)
-        editMenu.addAction(self.editaction)
-        editMenu.addAction(self.removeaction)
-        editMenu.addAction(self.saveaction)
+        editMenu.addAction(self.editAction)
+        editMenu.addAction(self.removeAction)
+        editMenu.addAction(self.saveAction)
 
         # Layout
         main_layout.addLayout(filter_layout)
         main_layout.addWidget(self.table)
         main_layout.addLayout(add_layout)
-        main_layout.addWidget(self.notesToggleReadOnly)
+        # main_layout.addWidget(self.notesToggleReadOnly)
         main_layout.addWidget(self.notes_text)
         main_layout.addWidget(self.save_button)
         main_layout.addWidget(self.markdown_label)
