@@ -28,6 +28,7 @@ from PySide6.QtWidgets import (
     QTextEdit,
     QVBoxLayout,
     QWidget,
+    QHeaderView,
 )
 from pyside_layout import MainWindow as MAIN
 from tools import parse_dict_to_table
@@ -112,8 +113,6 @@ class MainWindow(QMainWindow):
         info_column = QVBoxLayout()
         info_column.addWidget(QLabel("Notes"))
 
-
-
         self.notes_text = QTextEdit()
         self.notes_text.setReadOnly(True)
         self.save_button = QPushButton("Save")
@@ -122,7 +121,9 @@ class MainWindow(QMainWindow):
         self.markdown_label.setWordWrap(True)
 
         self.markdown_label.setFixedHeight(300)
-t
+
+        self.notesToggleReadOnly = QPushButton("Toggle Read Only")
+
         info_column.addWidget(self.notesToggleReadOnly)
         info_column.addWidget(self.notes_text)
         info_column.addWidget(self.save_button)
@@ -390,9 +391,12 @@ t
         elif remove:
             del random_data_dict[unit_number]
         else:
-            random_data_dict[unit_number].update(
-                {"due date": due_date, "status": status, "sale type": sale_type, "notes": notes}
-            )
+            random_data_dict[unit_number].update({
+                "due date": due_date,
+                "status": status,
+                "sale type": sale_type,
+                "notes": notes,
+            })
 
         jsonfile.write_text(json.dumps(random_data_dict))
         self.update_table()

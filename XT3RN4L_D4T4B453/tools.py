@@ -7,25 +7,24 @@ from datetime import datetime
 from pathlib import Path
 
 import markdown
-import PySimpleGUI as sg
 from tkhtmlview import html_parser
 
 
-@dataclass
-class HTMLVIEWER:
-    parser: html_parser.HTMLTextParser = field(default_factory=html_parser.HTMLTextParser)
+# @dataclass
+# class HTMLVIEWER:
+#     parser: html_parser.HTMLTextParser = field(default_factory=html_parser.HTMLTextParser)
 
-    def set_html(self, widget, html, strip=True) -> None:
-        prev_state = widget.cget("state")
-        widget.config(state=sg.tk.NORMAL)
-        widget.delete("1.0", sg.tk.END)
-        widget.tag_delete(widget.tag_names)
-        self.parser.w_set_html(widget, html, strip=strip)
-        widget.config(state=prev_state)
+#     def set_html(self, widget, html, strip=True) -> None:
+#         prev_state = widget.cget("state")
+#         widget.config(state=sg.tk.NORMAL)
+#         widget.delete("1.0", sg.tk.END)
+#         widget.tag_delete(widget.tag_names)
+#         self.parser.w_set_html(widget, html, strip=strip)
+#         widget.config(state=prev_state)
 
-    @staticmethod
-    def markdown2html(markdown_content) -> str:
-        return markdown.markdown(str(markdown_content))
+#     @staticmethod
+#     def markdown2html(markdown_content) -> str:
+#         return markdown.markdown(str(markdown_content))
 
 
 def parse_dict_to_table(data: dict) -> list[str]:
